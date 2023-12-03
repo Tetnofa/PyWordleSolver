@@ -5,6 +5,7 @@ import copy
 green = []
 yellow = []
 
+# Load possible wordles and all 5 letter words
 def load_wordlists():
     words = []
     extwords = [] 
@@ -16,6 +17,8 @@ def load_wordlists():
             extwords.append(line.strip())
     return words, extwords
 
+# Basis after every guess
+# Updates found green letters, yellow letters, and ensures that input is theoretically possible
 def basis(word):
     tempyellow = []
     for i in range(5):
@@ -37,7 +40,8 @@ def basis(word):
         if len(yellow) > green.count(""):
             print("Invalid Input : Too many Yellow Characters")
             exit(0)
-               
+
+# Create a list of Regular Expressions from the inputted word that can be used to filter valid words             
 def regex_generator(word):
     regex = []
     defaultregex = ["[a-z]"]*5
@@ -63,7 +67,7 @@ def regex_generator(word):
                 regex.append("".join(curregex))
     return regex
          
-
+# Asks for word guess, runs basis and generates regex. Then uses regex to find valid words
 def valid(words, extwords):
     while True:
         word = input("Please enter the word you guessed : ")
@@ -81,7 +85,8 @@ def valid(words, extwords):
         regex = []
         regex = regex_generator(word)
         return [w for w in words if all(re.match(pattern, w) for pattern in regex)]
-            
+
+# Heuristic to determine best words to guess. Uses list of valid words and finds which words from the extended list maximize chances of winning         
 def best(words, extwords):
     best_words = {}
     standard = [[]]*5
@@ -106,6 +111,8 @@ def best(words, extwords):
     sorted_best_words = sorted(best_words.items(), key=lambda x:x[1])[::-1]
     return sorted_best_words
 
+
+# Main function, Runs load, valid and best. Generates textfiles where valid words and best guesses are added.
 if __name__ == "__main__":
     words, extwords = load_wordlists()
     print("\n\n\n")
